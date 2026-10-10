@@ -15,10 +15,7 @@
         background: #050505;
         color: #fff;
         font-family: 'Inter', system-ui, sans-serif;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow-x: hidden;
+        overflow: hidden;
         -webkit-font-smoothing: antialiased;
         cursor: none;
         position: relative;
@@ -42,18 +39,9 @@
     }
     .cursor-ring.hover { width: 56px; height: 56px; border-color: #fff; }
 
-    /* Сетка */
-    #bg-canvas {
-        position: fixed;
-        inset: 0;
-        z-index: 0;
-        pointer-events: none;
-        opacity: 0.4;
-    }
-
-    /* Большая 404 на фоне */
+    /* ФОНОВАЯ 404 — АБСОЛЮТ, НЕ ВЛИЯЕТ НА ПОТОК */
     .bg-404 {
-        position: absolute;
+        position: fixed;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
@@ -63,21 +51,31 @@
         letter-spacing: -0.05em;
         color: transparent;
         -webkit-text-stroke: 1px rgba(255,255,255,0.05);
-        z-index: 1;
+        z-index: 0;
         pointer-events: none;
         user-select: none;
         white-space: nowrap;
-        overflow: hidden;
-        max-width: 100vw;
     }
 
+    /* Сетка */
+    #bg-canvas {
+        position: fixed;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        opacity: 0.4;
+    }
+
+    /* КОНТЕНТ — ЦЕНТРИРУЕТСЯ ЧЕРЕЗ ABSOLUTE */
     .content {
-        position: relative;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
         z-index: 2;
         text-align: center;
         padding: 40px;
         max-width: 720px;
-        margin: 0 auto;
         width: 100%;
     }
 
@@ -131,10 +129,7 @@
         border: 1px solid transparent;
         transition: all 0.2s;
     }
-    .btn-primary {
-        background: #fff;
-        color: #000;
-    }
+    .btn-primary { background: #fff; color: #000; }
     .btn-primary:hover {
         transform: translateY(-2px);
         box-shadow: 0 12px 40px rgba(255,255,255,0.2);
@@ -154,6 +149,7 @@
         a, button { cursor: pointer; }
         .cursor-dot, .cursor-ring { display: none; }
         .actions { flex-direction: column; }
+        .content { padding: 20px; }
     }
 </style>
 </head>
