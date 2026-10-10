@@ -50,10 +50,7 @@
         transform: translate(-50%, -50%);
         transition: width 0.2s, height 0.2s, border-color 0.2s;
     }
-    .cursor-ring.hover {
-        width: 56px; height: 56px;
-        border-color: #fff;
-    }
+    .cursor-ring.hover { width: 56px; height: 56px; border-color: #fff; }
 
     /* ФОН */
     #bg-canvas {
@@ -130,11 +127,7 @@
         flex-direction: column;
         justify-content: space-between;
     }
-    .burger span {
-        display: block;
-        height: 2px;
-        background: #fff;
-    }
+    .burger span { display: block; height: 2px; background: #fff; }
 
     /* HERO */
     .hero {
@@ -156,17 +149,13 @@
         font-weight: 700;
         margin-bottom: 40px;
     }
-    .hero-top .line {
-        width: 60px;
-        height: 1px;
-        background: var(--text-2);
-    }
+    .hero-top .line { width: 60px; height: 1px; background: var(--text-2); }
     .hero h1 {
         font-size: clamp(72px, 13vw, 220px);
         font-weight: 900;
         line-height: 0.85;
         letter-spacing: -0.05em;
-        margin-bottom: 40px;
+        margin-bottom: 60px;
     }
     .hero h1 .outline {
         color: transparent;
@@ -175,9 +164,10 @@
     .hero-bottom {
         display: grid;
         grid-template-columns: 1fr auto;
-        gap: 60px;
-        align-items: end;
-        max-width: 1200px;
+        gap: 80px;
+        align-items: center;
+        max-width: 1400px;
+        width: 100%;
     }
     .hero-left {
         display: flex;
@@ -196,13 +186,14 @@
         flex-wrap: wrap;
     }
     .hero-avatar {
-        width: clamp(220px, 24vw, 380px);
+        width: clamp(280px, 32vw, 520px);
         height: auto;
-        filter: drop-shadow(0 0 60px rgba(255,255,255,0.15));
+        filter: drop-shadow(0 0 80px rgba(255,255,255,0.2));
         pointer-events: none;
         user-select: none;
         animation: avatar-float 6s ease-in-out infinite;
         display: block;
+        margin-left: auto;
     }
     @keyframes avatar-float {
         0%, 100% { transform: translateY(0); }
@@ -223,10 +214,7 @@
         border: 1px solid transparent;
         transition: all 0.2s;
     }
-    .btn-primary {
-        background: #fff;
-        color: #000;
-    }
+    .btn-primary { background: #fff; color: #000; }
     .btn-primary:hover {
         transform: translateY(-2px);
         box-shadow: 0 12px 40px rgba(255,255,255,0.2);
@@ -408,10 +396,7 @@
         background: var(--border);
         border: 1px solid var(--border);
     }
-    .stat {
-        background: var(--bg);
-        padding: 60px 40px;
-    }
+    .stat { background: var(--bg); padding: 60px 40px; }
     .stat-value {
         font-size: clamp(60px, 8vw, 96px);
         font-weight: 900;
@@ -455,10 +440,7 @@
         color: var(--text-2);
         transition: transform 0.2s, color 0.2s;
     }
-    .faq-item[open] summary::after {
-        transform: rotate(45deg);
-        color: #fff;
-    }
+    .faq-item[open] summary::after { transform: rotate(45deg); color: #fff; }
     .faq-item summary:hover { color: #fff; }
     .faq-item p {
         margin-top: 16px;
@@ -547,13 +529,14 @@
         .burger { display: flex; }
         section { padding: 80px 0; }
         .hero { padding: 100px 0 60px; }
+        .hero h1 { margin-bottom: 40px; }
         .hero-bottom {
             grid-template-columns: 1fr;
             gap: 40px;
         }
         .hero-avatar {
-            width: 60%;
-            max-width: 240px;
+            width: 70%;
+            max-width: 320px;
             margin: 0 auto;
             order: -1;
         }
