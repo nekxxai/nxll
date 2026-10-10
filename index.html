@@ -20,7 +20,6 @@
         --text-0: #fff;
         --text-1: #b8b8b8;
         --text-2: #666;
-        --accent: #fff;
     }
     html { scroll-behavior: smooth; }
     body {
@@ -130,13 +129,11 @@
         display: none;
         flex-direction: column;
         justify-content: space-between;
-        cursor: none;
     }
     .burger span {
         display: block;
         height: 2px;
         background: #fff;
-        transition: transform 0.2s;
     }
 
     /* HERO */
@@ -177,15 +174,20 @@
     }
     .hero-bottom {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr auto;
         gap: 60px;
         align-items: end;
         max-width: 1200px;
     }
+    .hero-left {
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+        max-width: 560px;
+    }
     .hero-desc {
         font-size: 14px;
         color: var(--text-1);
-        max-width: 480px;
         line-height: 1.7;
     }
     .hero-cta {
@@ -193,6 +195,20 @@
         gap: 12px;
         flex-wrap: wrap;
     }
+    .hero-avatar {
+        width: clamp(220px, 24vw, 380px);
+        height: auto;
+        filter: drop-shadow(0 0 60px rgba(255,255,255,0.15));
+        pointer-events: none;
+        user-select: none;
+        animation: avatar-float 6s ease-in-out infinite;
+        display: block;
+    }
+    @keyframes avatar-float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-14px); }
+    }
+
     .btn {
         display: inline-flex;
         align-items: center;
@@ -227,7 +243,7 @@
     .scroll-hint {
         position: absolute;
         bottom: 40px;
-        left: 0;
+        left: 40px;
         display: flex;
         align-items: center;
         gap: 16px;
@@ -305,15 +321,12 @@
         padding: 40px 32px;
         transition: background 0.3s;
         position: relative;
-        overflow: hidden;
         min-height: 260px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
     }
-    .feature:hover {
-        background: var(--bg-1);
-    }
+    .feature:hover { background: var(--bg-1); }
     .feature-num {
         font-family: 'JetBrains Mono', monospace;
         font-size: 11px;
@@ -350,7 +363,6 @@
     .cmd-list {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 0;
         border-top: 1px solid var(--border);
     }
     .cmd {
@@ -399,7 +411,6 @@
     .stat {
         background: var(--bg);
         padding: 60px 40px;
-        text-align: left;
     }
     .stat-value {
         font-size: clamp(60px, 8vw, 96px);
@@ -417,9 +428,7 @@
     }
 
     /* FAQ */
-    .faq-list {
-        border-top: 1px solid var(--border);
-    }
+    .faq-list { border-top: 1px solid var(--border); }
     .faq-item {
         border-bottom: 1px solid var(--border);
         padding: 28px 0;
@@ -497,13 +506,16 @@
     footer {
         border-top: 1px solid var(--border);
         padding: 60px 0 40px;
+        font-size: 12px;
+        color: var(--text-2);
+    }
+    footer .container {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        font-size: 12px;
-        color: var(--text-2);
         flex-wrap: wrap;
         gap: 20px;
+        width: 100%;
     }
     footer a {
         color: var(--text-2);
@@ -535,12 +547,22 @@
         .burger { display: flex; }
         section { padding: 80px 0; }
         .hero { padding: 100px 0 60px; }
-        .hero-bottom { grid-template-columns: 1fr; gap: 40px; }
+        .hero-bottom {
+            grid-template-columns: 1fr;
+            gap: 40px;
+        }
+        .hero-avatar {
+            width: 60%;
+            max-width: 240px;
+            margin: 0 auto;
+            order: -1;
+        }
         .features-grid { grid-template-columns: 1fr; }
         .cmd-list { grid-template-columns: 1fr; }
         .stats-grid { grid-template-columns: 1fr; }
         .cta-box { padding: 60px 24px; }
-        footer { flex-direction: column; text-align: center; padding: 40px 0 30px; }
+        footer { padding: 40px 0 30px; text-align: center; }
+        footer .container { flex-direction: column; }
         .big-N { font-size: 90vw; }
     }
 </style>
@@ -582,14 +604,17 @@
             <span class="outline">BOT</span>
         </h1>
         <div class="hero-bottom">
-            <p class="hero-desc reveal">
-                Многофункциональный Discord-бот: система заявок, приватные голосовые комнаты,
-                полное логирование, реакция-роли, анти-хак и многое другое. Работает 24/7.
-            </p>
-            <div class="hero-cta reveal">
-                <a href="#invite" class="btn btn-primary">Добавить бота</a>
-                <a href="#features" class="btn btn-outline">Возможности</a>
+            <div class="hero-left">
+                <p class="hero-desc reveal">
+                    Многофункциональный Discord-бот: система заявок, приватные голосовые комнаты,
+                    полное логирование, реакция-роли, анти-хак и многое другое. Работает 24/7.
+                </p>
+                <div class="hero-cta reveal">
+                    <a href="#invite" class="btn btn-primary">Добавить бота</a>
+                    <a href="#features" class="btn btn-outline">Возможности</a>
+                </div>
             </div>
+            <img class="hero-avatar reveal" src="avatar.png" alt="null bot">
         </div>
     </div>
     <div class="scroll-hint">
@@ -602,10 +627,7 @@
 <section id="features">
     <div class="container">
         <div class="section-label reveal">01 · Возможности</div>
-        <h2 class="section-title reveal">
-            ВСЁ ЧТО<br>
-            <span class="outline">НУЖНО</span>
-        </h2>
+        <h2 class="section-title reveal">ВСЁ ЧТО<br><span class="outline">НУЖНО</span></h2>
         <div class="features-grid">
             <div class="feature reveal">
                 <div>
@@ -679,66 +701,19 @@
 <section id="commands">
     <div class="container">
         <div class="section-label reveal">02 · Команды</div>
-        <h2 class="section-title reveal">
-            ЧТО УМЕЕТ<br>
-            <span class="outline">БОТ</span>
-        </h2>
+        <h2 class="section-title reveal">ЧТО УМЕЕТ<br><span class="outline">БОТ</span></h2>
         <div class="cmd-list reveal">
-            <a class="cmd" href="#">
-                <span class="cmd-name">/apply-setup</span>
-                <span class="cmd-desc">Панель заявок</span>
-                <span class="cmd-arrow">→</span>
-            </a>
-            <a class="cmd" href="#">
-                <span class="cmd-name">/voice-panel</span>
-                <span class="cmd-desc">Панель войсов</span>
-                <span class="cmd-arrow">→</span>
-            </a>
-            <a class="cmd" href="#">
-                <span class="cmd-name">/reaction-roles</span>
-                <span class="cmd-desc">Создать панель ролей</span>
-                <span class="cmd-arrow">→</span>
-            </a>
-            <a class="cmd" href="#">
-                <span class="cmd-name">/reaction-sync</span>
-                <span class="cmd-desc">Синхронизация ролей</span>
-                <span class="cmd-arrow">→</span>
-            </a>
-            <a class="cmd" href="#">
-                <span class="cmd-name">/bugreport-setup</span>
-                <span class="cmd-desc">Панель багрепортов</span>
-                <span class="cmd-arrow">→</span>
-            </a>
-            <a class="cmd" href="#">
-                <span class="cmd-name">/role-panel</span>
-                <span class="cmd-desc">Панель выдачи ролей</span>
-                <span class="cmd-arrow">→</span>
-            </a>
-            <a class="cmd" href="#">
-                <span class="cmd-name">/dm-history</span>
-                <span class="cmd-desc">История ЛС</span>
-                <span class="cmd-arrow">→</span>
-            </a>
-            <a class="cmd" href="#">
-                <span class="cmd-name">/ping</span>
-                <span class="cmd-desc">Задержка бота</span>
-                <span class="cmd-arrow">→</span>
-            </a>
-            <a class="cmd" href="#">
-                <span class="cmd-name">/sync</span>
-                <span class="cmd-desc">Синхронизация команд</span>
-                <span class="cmd-arrow">→</span>
-            </a>
-            <a class="cmd" href="#">
-                <span class="cmd-name">/refresh</span>
-                <span class="cmd-desc">Обновить панели</span>
-                <span class="cmd-arrow">→</span>
-            </a>
-            <a class="cmd" href="#">
-                <span class="cmd-name">/antihack-setup</span>
-                <span class="cmd-desc">Обновить анти-хак</span>
-                <span class="cmd-arrow">→</span>
-            </a>
+            <a class="cmd" href="#"><span class="cmd-name">/apply-setup</span><span class="cmd-desc">Панель заявок</span><span class="cmd-arrow">→</span></a>
+            <a class="cmd" href="#"><span class="cmd-name">/voice-panel</span><span class="cmd-desc">Панель войсов</span><span class="cmd-arrow">→</span></a>
+            <a class="cmd" href="#"><span class="cmd-name">/reaction-roles</span><span class="cmd-desc">Создать панель ролей</span><span class="cmd-arrow">→</span></a>
+            <a class="cmd" href="#"><span class="cmd-name">/reaction-sync</span><span class="cmd-desc">Синхронизация ролей</span><span class="cmd-arrow">→</span></a>
+            <a class="cmd" href="#"><span class="cmd-name">/bugreport-setup</span><span class="cmd-desc">Панель багрепортов</span><span class="cmd-arrow">→</span></a>
+            <a class="cmd" href="#"><span class="cmd-name">/role-panel</span><span class="cmd-desc">Панель выдачи ролей</span><span class="cmd-arrow">→</span></a>
+            <a class="cmd" href="#"><span class="cmd-name">/dm-history</span><span class="cmd-desc">История ЛС</span><span class="cmd-arrow">→</span></a>
+            <a class="cmd" href="#"><span class="cmd-name">/ping</span><span class="cmd-desc">Задержка бота</span><span class="cmd-arrow">→</span></a>
+            <a class="cmd" href="#"><span class="cmd-name">/sync</span><span class="cmd-desc">Синхронизация команд</span><span class="cmd-arrow">→</span></a>
+            <a class="cmd" href="#"><span class="cmd-name">/refresh</span><span class="cmd-desc">Обновить панели</span><span class="cmd-arrow">→</span></a>
+            <a class="cmd" href="#"><span class="cmd-name">/antihack-setup</span><span class="cmd-desc">Обновить анти-хак</span><span class="cmd-arrow">→</span></a>
         </div>
     </div>
 </section>
@@ -768,14 +743,11 @@
 <section id="faq">
     <div class="container">
         <div class="section-label reveal">04 · FAQ</div>
-        <h2 class="section-title reveal">
-            ЧАСТЫЕ<br>
-            <span class="outline">ВОПРОСЫ</span>
-        </h2>
+        <h2 class="section-title reveal">ЧАСТЫЕ<br><span class="outline">ВОПРОСЫ</span></h2>
         <div class="faq-list reveal">
             <details class="faq-item">
                 <summary>Это бесплатно?</summary>
-                <p>Да, полностью. Никаких подписок, платных функций или скрытых платежей. Бот живёт как пет-проект.</p>
+                <p>Да, полностью. Никаких подписок, платных функций или скрытых платежей.</p>
             </details>
             <details class="faq-item">
                 <summary>Как добавить бота на сервер?</summary>
@@ -813,20 +785,17 @@
 
 <!-- FOOTER -->
 <footer>
-    <div class="container" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;width:100%;">
+    <div class="container">
         <div>© 2026 null bot · сделано с ❤️</div>
-        <div>
-            <a href="https://discord.gg/nxll" target="_blank" rel="noopener">Discord</a>
-        </div>
+        <div><a href="https://discord.gg/nxll" target="_blank" rel="noopener">Discord</a></div>
     </div>
 </footer>
 
 <script>
-    // ================= КУРСОР =================
+    // КУРСОР
     const dot = document.getElementById('cursor-dot');
     const ring = document.getElementById('cursor-ring');
     let mx = 0, my = 0, rx = 0, ry = 0;
-
     document.addEventListener('mousemove', (e) => {
         mx = e.clientX; my = e.clientY;
         dot.style.left = mx + 'px';
@@ -840,19 +809,16 @@
         requestAnimationFrame(animateRing);
     }
     animateRing();
-
     document.querySelectorAll('a, button, summary, .feature, .cmd').forEach(el => {
         el.addEventListener('mouseenter', () => ring.classList.add('hover'));
         el.addEventListener('mouseleave', () => ring.classList.remove('hover'));
     });
 
-    // ================= 3D СЕТКА =================
+    // 3D СЕТКА
     const canvas = document.getElementById('bg-canvas');
     const ctx = canvas.getContext('2d');
     let W, H, points = [];
-    const GRID = 12;
     const SPACING = 120;
-
     function resizeCanvas() {
         W = canvas.width = window.innerWidth;
         H = canvas.height = window.innerHeight;
@@ -861,41 +827,28 @@
         const rows = Math.ceil(H / SPACING) + 2;
         for (let i = 0; i < cols; i++) {
             for (let j = 0; j < rows; j++) {
-                points.push({
-                    x: i * SPACING - SPACING,
-                    y: j * SPACING - SPACING,
-                    bx: i * SPACING - SPACING,
-                    by: j * SPACING - SPACING,
-                    z: Math.random() * 0.5 + 0.5,
-                });
+                points.push({ bx: i * SPACING - SPACING, by: j * SPACING - SPACING });
             }
         }
     }
-
     let time = 0;
     function drawGrid() {
         ctx.clearRect(0, 0, W, H);
         const cols = Math.ceil(W / SPACING) + 2;
         const rows = Math.ceil(H / SPACING) + 2;
         const t = time * 0.0008;
-
-        // волна
         const grid = [];
         for (let i = 0; i < cols; i++) {
             grid[i] = [];
             for (let j = 0; j < rows; j++) {
                 const p = points[i * rows + j];
                 if (!p) continue;
-                const wave = Math.sin(i * 0.3 + j * 0.3 + t) * 8
-                           + Math.cos(i * 0.15 - j * 0.2 + t * 0.7) * 6;
+                const wave = Math.sin(i * 0.3 + j * 0.3 + t) * 8 + Math.cos(i * 0.15 - j * 0.2 + t * 0.7) * 6;
                 grid[i][j] = { x: p.bx, y: p.by + wave };
             }
         }
-
         ctx.strokeStyle = 'rgba(255,255,255,0.08)';
         ctx.lineWidth = 1;
-
-        // горизонтальные линии
         for (let j = 0; j < rows; j++) {
             ctx.beginPath();
             for (let i = 0; i < cols; i++) {
@@ -906,7 +859,6 @@
             }
             ctx.stroke();
         }
-        // вертикальные
         for (let i = 0; i < cols; i++) {
             ctx.beginPath();
             for (let j = 0; j < rows; j++) {
@@ -917,8 +869,6 @@
             }
             ctx.stroke();
         }
-
-        // точки на пересечениях
         ctx.fillStyle = 'rgba(255,255,255,0.15)';
         for (let i = 0; i < cols; i += 2) {
             for (let j = 0; j < rows; j += 2) {
@@ -930,24 +880,17 @@
                 }
             }
         }
-
         time++;
         requestAnimationFrame(drawGrid);
     }
-
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
     drawGrid();
 
-    // ================= ПАРАЛЛАКС БУКВЫ N =================
+    // ПАРАЛЛАКС N
     const bigN = document.getElementById('big-N');
-    let scrollY = 0;
-    let currentY = 0;
-
-    window.addEventListener('scroll', () => {
-        scrollY = window.scrollY;
-    });
-
+    let scrollY = 0, currentY = 0;
+    window.addEventListener('scroll', () => { scrollY = window.scrollY; });
     function animateN() {
         currentY += (scrollY - currentY) * 0.08;
         bigN.style.transform = `translate(-50%, calc(-50% + ${currentY * 0.3}px)) scale(${1 + currentY * 0.0004})`;
@@ -955,7 +898,7 @@
     }
     animateN();
 
-    // ================= REVEAL =================
+    // REVEAL
     const reveals = document.querySelectorAll('.reveal');
     const io = new IntersectionObserver((entries) => {
         entries.forEach(e => {
@@ -967,17 +910,16 @@
     }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
     reveals.forEach(el => io.observe(el));
 
-    // ================= СЧЁТЧИК =================
+    // СЧЁТЧИК
     const counters = document.querySelectorAll('[data-count]');
     const counterObserver = new IntersectionObserver((entries) => {
         entries.forEach(e => {
             if (e.isIntersecting) {
                 const el = e.target;
                 const target = +el.dataset.count;
-                const duration = 1500;
                 const start = performance.now();
                 const tick = (now) => {
-                    const p = Math.min((now - start) / duration, 1);
+                    const p = Math.min((now - start) / 1500, 1);
                     const eased = 1 - Math.pow(1 - p, 3);
                     el.textContent = Math.floor(eased * target);
                     if (p < 1) requestAnimationFrame(tick);
@@ -989,9 +931,6 @@
         });
     }, { threshold: 0.5 });
     counters.forEach(c => counterObserver.observe(c));
-
-    // ================= TYPEWRITER (опционально) =================
-    // В hero уже есть текст, можно раскомментировать, если нужно
 </script>
 
 </body>
