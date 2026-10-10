@@ -1,1 +1,998 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>null bot</title>
+<meta name="description" content="null — многофункциональный Discord-бот: заявки, приватные войсы, логи, реакция-роли, анти-хак.">
+<link rel="icon" type="image/png" href="avatar.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+        --bg: #050505;
+        --bg-1: #0a0a0a;
+        --bg-2: #111;
+        --border: #1e1e1e;
+        --border-hover: #333;
+        --text-0: #fff;
+        --text-1: #b8b8b8;
+        --text-2: #666;
+        --accent: #fff;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+        background: var(--bg);
+        color: var(--text-0);
+        font-family: 'Inter', system-ui, sans-serif;
+        font-size: 15px;
+        line-height: 1.55;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+        cursor: none;
+    }
+    a, button { cursor: none; }
 
+    /* КУРСОР */
+    .cursor-dot {
+        position: fixed; width: 6px; height: 6px;
+        background: #fff; border-radius: 50%;
+        pointer-events: none; z-index: 9999;
+        transform: translate(-50%, -50%);
+        mix-blend-mode: difference;
+    }
+    .cursor-ring {
+        position: fixed; width: 34px; height: 34px;
+        border: 1px solid rgba(255,255,255,0.4);
+        border-radius: 50%;
+        pointer-events: none; z-index: 9998;
+        transform: translate(-50%, -50%);
+        transition: width 0.2s, height 0.2s, border-color 0.2s;
+    }
+    .cursor-ring.hover {
+        width: 56px; height: 56px;
+        border-color: #fff;
+    }
+
+    /* ФОН */
+    #bg-canvas {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        opacity: 0.55;
+    }
+    .big-N {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: clamp(600px, 90vw, 1400px);
+        font-weight: 900;
+        line-height: 0.85;
+        letter-spacing: -0.05em;
+        color: transparent;
+        -webkit-text-stroke: 1px rgba(255,255,255,0.06);
+        z-index: 1;
+        pointer-events: none;
+        user-select: none;
+        will-change: transform;
+    }
+
+    /* ОБЩЕЕ */
+    .container {
+        position: relative;
+        z-index: 2;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 40px;
+    }
+
+    /* HEADER */
+    header {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        padding: 20px 40px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        z-index: 100;
+        background: linear-gradient(180deg, rgba(5,5,5,0.9), transparent);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+    }
+    .logo {
+        font-size: 14px;
+        font-weight: 900;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+    }
+    .logo span { color: var(--text-2); }
+    nav {
+        display: flex;
+        gap: 32px;
+        font-size: 12px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        font-weight: 700;
+    }
+    nav a {
+        color: var(--text-2);
+        text-decoration: none;
+        transition: color 0.15s;
+    }
+    nav a:hover { color: var(--text-0); }
+    .burger {
+        width: 32px;
+        height: 24px;
+        display: none;
+        flex-direction: column;
+        justify-content: space-between;
+        cursor: none;
+    }
+    .burger span {
+        display: block;
+        height: 2px;
+        background: #fff;
+        transition: transform 0.2s;
+    }
+
+    /* HERO */
+    .hero {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        position: relative;
+        padding: 140px 0 80px;
+    }
+    .hero-top {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        font-size: 11px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--text-2);
+        font-weight: 700;
+        margin-bottom: 40px;
+    }
+    .hero-top .line {
+        width: 60px;
+        height: 1px;
+        background: var(--text-2);
+    }
+    .hero h1 {
+        font-size: clamp(72px, 13vw, 220px);
+        font-weight: 900;
+        line-height: 0.85;
+        letter-spacing: -0.05em;
+        margin-bottom: 40px;
+    }
+    .hero h1 .outline {
+        color: transparent;
+        -webkit-text-stroke: 1.5px #fff;
+    }
+    .hero-bottom {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: end;
+        max-width: 1200px;
+    }
+    .hero-desc {
+        font-size: 14px;
+        color: var(--text-1);
+        max-width: 480px;
+        line-height: 1.7;
+    }
+    .hero-cta {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 28px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        text-decoration: none;
+        border: 1px solid transparent;
+        transition: all 0.2s;
+    }
+    .btn-primary {
+        background: #fff;
+        color: #000;
+    }
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px rgba(255,255,255,0.2);
+    }
+    .btn-outline {
+        background: transparent;
+        color: #fff;
+        border-color: var(--border-hover);
+    }
+    .btn-outline:hover {
+        border-color: #fff;
+        background: rgba(255,255,255,0.03);
+    }
+    .scroll-hint {
+        position: absolute;
+        bottom: 40px;
+        left: 0;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-size: 11px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--text-2);
+        font-weight: 700;
+    }
+    .scroll-hint .arrow {
+        width: 40px;
+        height: 1px;
+        background: var(--text-2);
+        position: relative;
+    }
+    .scroll-hint .arrow::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        top: -3px;
+        width: 6px;
+        height: 6px;
+        border-right: 1px solid var(--text-2);
+        border-bottom: 1px solid var(--text-2);
+        transform: rotate(-45deg);
+        animation: arrow-bounce 1.5s infinite;
+    }
+    @keyframes arrow-bounce {
+        0%, 100% { transform: rotate(-45deg) translate(0, 0); }
+        50% { transform: rotate(-45deg) translate(4px, 4px); }
+    }
+
+    /* SECTIONS */
+    section { padding: 140px 0; position: relative; }
+    .section-label {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        font-size: 11px;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--text-2);
+        font-weight: 700;
+        margin-bottom: 60px;
+    }
+    .section-label::before {
+        content: "";
+        width: 40px;
+        height: 1px;
+        background: var(--text-2);
+    }
+    .section-title {
+        font-size: clamp(48px, 8vw, 120px);
+        font-weight: 900;
+        line-height: 0.9;
+        letter-spacing: -0.04em;
+        margin-bottom: 80px;
+        max-width: 900px;
+    }
+    .section-title .outline {
+        color: transparent;
+        -webkit-text-stroke: 1.5px #fff;
+    }
+
+    /* FEATURES */
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1px;
+        background: var(--border);
+        border: 1px solid var(--border);
+    }
+    .feature {
+        background: var(--bg);
+        padding: 40px 32px;
+        transition: background 0.3s;
+        position: relative;
+        overflow: hidden;
+        min-height: 260px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .feature:hover {
+        background: var(--bg-1);
+    }
+    .feature-num {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        color: var(--text-2);
+        letter-spacing: 2px;
+        margin-bottom: 20px;
+    }
+    .feature h3 {
+        font-size: 18px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin-bottom: 12px;
+        line-height: 1.2;
+    }
+    .feature p {
+        font-size: 13px;
+        color: var(--text-1);
+        line-height: 1.6;
+    }
+    .feature-icon {
+        position: absolute;
+        top: 32px;
+        right: 32px;
+        font-size: 22px;
+        opacity: 0.5;
+        transition: opacity 0.3s, transform 0.3s;
+    }
+    .feature:hover .feature-icon {
+        opacity: 1;
+        transform: translate(2px, -2px);
+    }
+
+    /* COMMANDS */
+    .cmd-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0;
+        border-top: 1px solid var(--border);
+    }
+    .cmd {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 28px 8px;
+        border-bottom: 1px solid var(--border);
+        gap: 24px;
+        transition: padding-left 0.2s;
+        text-decoration: none;
+        color: inherit;
+    }
+    .cmd:hover { padding-left: 24px; }
+    .cmd:hover .cmd-name { color: #fff; }
+    .cmd:hover .cmd-arrow { transform: translateX(6px); opacity: 1; }
+    .cmd-name {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text-1);
+        transition: color 0.15s;
+    }
+    .cmd-desc {
+        font-size: 12.5px;
+        color: var(--text-2);
+        text-align: right;
+        flex: 1;
+        margin-left: 24px;
+    }
+    .cmd-arrow {
+        font-size: 18px;
+        color: #fff;
+        opacity: 0;
+        transition: opacity 0.2s, transform 0.2s;
+    }
+
+    /* STATS */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1px;
+        background: var(--border);
+        border: 1px solid var(--border);
+    }
+    .stat {
+        background: var(--bg);
+        padding: 60px 40px;
+        text-align: left;
+    }
+    .stat-value {
+        font-size: clamp(60px, 8vw, 96px);
+        font-weight: 900;
+        line-height: 1;
+        letter-spacing: -0.05em;
+        margin-bottom: 12px;
+    }
+    .stat-label {
+        font-size: 11px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--text-2);
+        font-weight: 700;
+    }
+
+    /* FAQ */
+    .faq-list {
+        border-top: 1px solid var(--border);
+    }
+    .faq-item {
+        border-bottom: 1px solid var(--border);
+        padding: 28px 0;
+        transition: padding 0.2s;
+    }
+    .faq-item[open] { padding: 36px 0; }
+    .faq-item summary {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        list-style: none;
+        cursor: none;
+        transition: color 0.15s;
+    }
+    .faq-item summary::-webkit-details-marker { display: none; }
+    .faq-item summary::after {
+        content: "+";
+        font-size: 24px;
+        font-weight: 300;
+        color: var(--text-2);
+        transition: transform 0.2s, color 0.2s;
+    }
+    .faq-item[open] summary::after {
+        transform: rotate(45deg);
+        color: #fff;
+    }
+    .faq-item summary:hover { color: #fff; }
+    .faq-item p {
+        margin-top: 16px;
+        color: var(--text-1);
+        font-size: 14px;
+        line-height: 1.7;
+        max-width: 720px;
+    }
+
+    /* CTA */
+    .cta-box {
+        border: 1px solid var(--border);
+        padding: 100px 60px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    .cta-box::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse at 50% 100%, rgba(255,255,255,0.06), transparent 60%);
+        pointer-events: none;
+    }
+    .cta-box h2 {
+        font-size: clamp(40px, 6vw, 88px);
+        font-weight: 900;
+        letter-spacing: -0.04em;
+        line-height: 0.95;
+        margin-bottom: 24px;
+        position: relative;
+    }
+    .cta-box p {
+        font-size: 15px;
+        color: var(--text-1);
+        margin-bottom: 40px;
+        max-width: 480px;
+        margin-left: auto;
+        margin-right: auto;
+        position: relative;
+    }
+    .cta-box .hero-cta { justify-content: center; position: relative; }
+
+    /* FOOTER */
+    footer {
+        border-top: 1px solid var(--border);
+        padding: 60px 0 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+        color: var(--text-2);
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+    footer a {
+        color: var(--text-2);
+        text-decoration: none;
+        transition: color 0.15s;
+    }
+    footer a:hover { color: #fff; }
+
+    /* REVEAL */
+    .reveal {
+        opacity: 0;
+        transform: translateY(40px);
+        transition: opacity 1s cubic-bezier(0.2, 0.8, 0.2, 1),
+                    transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .reveal.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* МОБИЛКА */
+    @media (max-width: 900px) {
+        body { cursor: auto; }
+        a, button, summary { cursor: pointer; }
+        .cursor-dot, .cursor-ring { display: none; }
+        .container { padding: 0 20px; }
+        header { padding: 16px 20px; }
+        nav { display: none; }
+        .burger { display: flex; }
+        section { padding: 80px 0; }
+        .hero { padding: 100px 0 60px; }
+        .hero-bottom { grid-template-columns: 1fr; gap: 40px; }
+        .features-grid { grid-template-columns: 1fr; }
+        .cmd-list { grid-template-columns: 1fr; }
+        .stats-grid { grid-template-columns: 1fr; }
+        .cta-box { padding: 60px 24px; }
+        footer { flex-direction: column; text-align: center; padding: 40px 0 30px; }
+        .big-N { font-size: 90vw; }
+    }
+</style>
+</head>
+<body>
+
+<!-- КУРСОР -->
+<div class="cursor-dot" id="cursor-dot"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<!-- ФОН -->
+<canvas id="bg-canvas"></canvas>
+<div class="big-N" id="big-N">N</div>
+
+<!-- HEADER -->
+<header>
+    <div class="logo">NULL <span>BOT</span></div>
+    <nav>
+        <a href="#features">Возможности</a>
+        <a href="#commands">Команды</a>
+        <a href="#stats">Статистика</a>
+        <a href="#faq">FAQ</a>
+        <a href="#invite">Добавить</a>
+    </nav>
+    <div class="burger">
+        <span></span><span></span><span></span>
+    </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-top">
+            <span class="line"></span>
+            <span>DISCORD BOT · 2026</span>
+        </div>
+        <h1 class="reveal">
+            NULL<br>
+            <span class="outline">BOT</span>
+        </h1>
+        <div class="hero-bottom">
+            <p class="hero-desc reveal">
+                Многофункциональный Discord-бот: система заявок, приватные голосовые комнаты,
+                полное логирование, реакция-роли, анти-хак и многое другое. Работает 24/7.
+            </p>
+            <div class="hero-cta reveal">
+                <a href="#invite" class="btn btn-primary">Добавить бота</a>
+                <a href="#features" class="btn btn-outline">Возможности</a>
+            </div>
+        </div>
+    </div>
+    <div class="scroll-hint">
+        <span>SCROLL</span>
+        <span class="arrow"></span>
+    </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+    <div class="container">
+        <div class="section-label reveal">01 · Возможности</div>
+        <h2 class="section-title reveal">
+            ВСЁ ЧТО<br>
+            <span class="outline">НУЖНО</span>
+        </h2>
+        <div class="features-grid">
+            <div class="feature reveal">
+                <div>
+                    <div class="feature-num">01</div>
+                    <h3>Система заявок</h3>
+                    <p>Приватные каналы, модалка с полями, кнопки «Принять/Отклонить», вызов на обзвон, архив.</p>
+                </div>
+                <span class="feature-icon">📝</span>
+            </div>
+            <div class="feature reveal">
+                <div>
+                    <div class="feature-num">02</div>
+                    <h3>Приватные войсы</h3>
+                    <p>Заходишь в триггер — получаешь свою комнату. Управление доступом, лимит, регион.</p>
+                </div>
+                <span class="feature-icon">🔊</span>
+            </div>
+            <div class="feature reveal">
+                <div>
+                    <div class="feature-num">03</div>
+                    <h3>Полное логирование</h3>
+                    <p>Сообщения, редактирования, роли, участники, голос — всё с указанием, кто это сделал.</p>
+                </div>
+                <span class="feature-icon">📜</span>
+            </div>
+            <div class="feature reveal">
+                <div>
+                    <div class="feature-num">04</div>
+                    <h3>Реакция-роли</h3>
+                    <p>Панели с эмодзи и ролями, автоматическая синхронизация, редактирование по ссылке.</p>
+                </div>
+                <span class="feature-icon">🎭</span>
+            </div>
+            <div class="feature reveal">
+                <div>
+                    <div class="feature-num">05</div>
+                    <h3>Анти-хак</h3>
+                    <p>Каналы-ловушки: любой, кто туда напишет, получит таймаут, а сообщения удалятся.</p>
+                </div>
+                <span class="feature-icon">🛡️</span>
+            </div>
+            <div class="feature reveal">
+                <div>
+                    <div class="feature-num">06</div>
+                    <h3>Онлайн серверов Majestic</h3>
+                    <p>Автоматический трекер онлайна New York и других серверов — обновляется каждые 2 минуты.</p>
+                </div>
+                <span class="feature-icon">🎮</span>
+            </div>
+            <div class="feature reveal">
+                <div>
+                    <div class="feature-num">07</div>
+                    <h3>Инфо о юзере</h3>
+                    <p>Карточка участника: аватар, роли, дата регистрации, дата захода на сервер.</p>
+                </div>
+                <span class="feature-icon">👤</span>
+            </div>
+            <div class="feature reveal">
+                <div>
+                    <div class="feature-num">08</div>
+                    <h3>Кастомные команды</h3>
+                    <p>Админ добавляет свои текстовые команды через панель: !rules, !ip и другие.</p>
+                </div>
+                <span class="feature-icon">⌨️</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- COMMANDS -->
+<section id="commands">
+    <div class="container">
+        <div class="section-label reveal">02 · Команды</div>
+        <h2 class="section-title reveal">
+            ЧТО УМЕЕТ<br>
+            <span class="outline">БОТ</span>
+        </h2>
+        <div class="cmd-list reveal">
+            <a class="cmd" href="#">
+                <span class="cmd-name">/apply-setup</span>
+                <span class="cmd-desc">Панель заявок</span>
+                <span class="cmd-arrow">→</span>
+            </a>
+            <a class="cmd" href="#">
+                <span class="cmd-name">/voice-panel</span>
+                <span class="cmd-desc">Панель войсов</span>
+                <span class="cmd-arrow">→</span>
+            </a>
+            <a class="cmd" href="#">
+                <span class="cmd-name">/reaction-roles</span>
+                <span class="cmd-desc">Создать панель ролей</span>
+                <span class="cmd-arrow">→</span>
+            </a>
+            <a class="cmd" href="#">
+                <span class="cmd-name">/reaction-sync</span>
+                <span class="cmd-desc">Синхронизация ролей</span>
+                <span class="cmd-arrow">→</span>
+            </a>
+            <a class="cmd" href="#">
+                <span class="cmd-name">/bugreport-setup</span>
+                <span class="cmd-desc">Панель багрепортов</span>
+                <span class="cmd-arrow">→</span>
+            </a>
+            <a class="cmd" href="#">
+                <span class="cmd-name">/role-panel</span>
+                <span class="cmd-desc">Панель выдачи ролей</span>
+                <span class="cmd-arrow">→</span>
+            </a>
+            <a class="cmd" href="#">
+                <span class="cmd-name">/dm-history</span>
+                <span class="cmd-desc">История ЛС</span>
+                <span class="cmd-arrow">→</span>
+            </a>
+            <a class="cmd" href="#">
+                <span class="cmd-name">/ping</span>
+                <span class="cmd-desc">Задержка бота</span>
+                <span class="cmd-arrow">→</span>
+            </a>
+            <a class="cmd" href="#">
+                <span class="cmd-name">/sync</span>
+                <span class="cmd-desc">Синхронизация команд</span>
+                <span class="cmd-arrow">→</span>
+            </a>
+            <a class="cmd" href="#">
+                <span class="cmd-name">/refresh</span>
+                <span class="cmd-desc">Обновить панели</span>
+                <span class="cmd-arrow">→</span>
+            </a>
+            <a class="cmd" href="#">
+                <span class="cmd-name">/antihack-setup</span>
+                <span class="cmd-desc">Обновить анти-хак</span>
+                <span class="cmd-arrow">→</span>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- STATS -->
+<section id="stats">
+    <div class="container">
+        <div class="section-label reveal">03 · Статистика</div>
+        <div class="stats-grid">
+            <div class="stat reveal">
+                <div class="stat-value" data-count="3">0</div>
+                <div class="stat-label">Серверов</div>
+            </div>
+            <div class="stat reveal">
+                <div class="stat-value" data-count="11">0</div>
+                <div class="stat-label">Команд</div>
+            </div>
+            <div class="stat reveal">
+                <div class="stat-value" data-count="24">0</div>
+                <div class="stat-label">Часа онлайн</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+    <div class="container">
+        <div class="section-label reveal">04 · FAQ</div>
+        <h2 class="section-title reveal">
+            ЧАСТЫЕ<br>
+            <span class="outline">ВОПРОСЫ</span>
+        </h2>
+        <div class="faq-list reveal">
+            <details class="faq-item">
+                <summary>Это бесплатно?</summary>
+                <p>Да, полностью. Никаких подписок, платных функций или скрытых платежей. Бот живёт как пет-проект.</p>
+            </details>
+            <details class="faq-item">
+                <summary>Как добавить бота на сервер?</summary>
+                <p>Нажми «Добавить бота» на этой странице. Откроется окно Discord с приглашением — выбери сервер, выдай права, готово.</p>
+            </details>
+            <details class="faq-item">
+                <summary>Что нужно для работы?</summary>
+                <p>Только права администратора на сервере, где хочешь использовать бота. Ничего ставить на комп не нужно.</p>
+            </details>
+            <details class="faq-item">
+                <summary>Безопасно ли это?</summary>
+                <p>Да. Бот использует официальное Discord API, не собирает и не передаёт данные третьим лицам.</p>
+            </details>
+            <details class="faq-item">
+                <summary>Куда писать по багам и идеям?</summary>
+                <p>Зайди на <a href="https://discord.gg/nxll" style="color:#fff;">наш Discord-сервер</a> — там можно оставить баг-репорт или предложение.</p>
+            </details>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section id="invite">
+    <div class="container">
+        <div class="cta-box reveal">
+            <h2>ГОТОВ<br>ДОБАВИТЬ?</h2>
+            <p>Один клик — и все возможности бота на твоём сервере. Бесплатно, без рекламы и ограничений.</p>
+            <div class="hero-cta">
+                <a href="https://discord.com/oauth2/authorize?client_id=1553115524932702228&permissions=8&scope=bot%20applications.commands" class="btn btn-primary" target="_blank" rel="noopener">Добавить бота</a>
+                <a href="https://discord.gg/nxll" class="btn btn-outline" target="_blank" rel="noopener">Discord-сервер</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <div class="container" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;width:100%;">
+        <div>© 2026 null bot · сделано с ❤️</div>
+        <div>
+            <a href="https://discord.gg/nxll" target="_blank" rel="noopener">Discord</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // ================= КУРСОР =================
+    const dot = document.getElementById('cursor-dot');
+    const ring = document.getElementById('cursor-ring');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+
+    document.addEventListener('mousemove', (e) => {
+        mx = e.clientX; my = e.clientY;
+        dot.style.left = mx + 'px';
+        dot.style.top = my + 'px';
+    });
+    function animateRing() {
+        rx += (mx - rx) * 0.18;
+        ry += (my - ry) * 0.18;
+        ring.style.left = rx + 'px';
+        ring.style.top = ry + 'px';
+        requestAnimationFrame(animateRing);
+    }
+    animateRing();
+
+    document.querySelectorAll('a, button, summary, .feature, .cmd').forEach(el => {
+        el.addEventListener('mouseenter', () => ring.classList.add('hover'));
+        el.addEventListener('mouseleave', () => ring.classList.remove('hover'));
+    });
+
+    // ================= 3D СЕТКА =================
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    let W, H, points = [];
+    const GRID = 12;
+    const SPACING = 120;
+
+    function resizeCanvas() {
+        W = canvas.width = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+        points = [];
+        const cols = Math.ceil(W / SPACING) + 2;
+        const rows = Math.ceil(H / SPACING) + 2;
+        for (let i = 0; i < cols; i++) {
+            for (let j = 0; j < rows; j++) {
+                points.push({
+                    x: i * SPACING - SPACING,
+                    y: j * SPACING - SPACING,
+                    bx: i * SPACING - SPACING,
+                    by: j * SPACING - SPACING,
+                    z: Math.random() * 0.5 + 0.5,
+                });
+            }
+        }
+    }
+
+    let time = 0;
+    function drawGrid() {
+        ctx.clearRect(0, 0, W, H);
+        const cols = Math.ceil(W / SPACING) + 2;
+        const rows = Math.ceil(H / SPACING) + 2;
+        const t = time * 0.0008;
+
+        // волна
+        const grid = [];
+        for (let i = 0; i < cols; i++) {
+            grid[i] = [];
+            for (let j = 0; j < rows; j++) {
+                const p = points[i * rows + j];
+                if (!p) continue;
+                const wave = Math.sin(i * 0.3 + j * 0.3 + t) * 8
+                           + Math.cos(i * 0.15 - j * 0.2 + t * 0.7) * 6;
+                grid[i][j] = { x: p.bx, y: p.by + wave };
+            }
+        }
+
+        ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+        ctx.lineWidth = 1;
+
+        // горизонтальные линии
+        for (let j = 0; j < rows; j++) {
+            ctx.beginPath();
+            for (let i = 0; i < cols; i++) {
+                const p = grid[i][j];
+                if (!p) continue;
+                if (i === 0) ctx.moveTo(p.x, p.y);
+                else ctx.lineTo(p.x, p.y);
+            }
+            ctx.stroke();
+        }
+        // вертикальные
+        for (let i = 0; i < cols; i++) {
+            ctx.beginPath();
+            for (let j = 0; j < rows; j++) {
+                const p = grid[i][j];
+                if (!p) continue;
+                if (j === 0) ctx.moveTo(p.x, p.y);
+                else ctx.lineTo(p.x, p.y);
+            }
+            ctx.stroke();
+        }
+
+        // точки на пересечениях
+        ctx.fillStyle = 'rgba(255,255,255,0.15)';
+        for (let i = 0; i < cols; i += 2) {
+            for (let j = 0; j < rows; j += 2) {
+                const p = grid[i][j];
+                if (p) {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 1, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+        }
+
+        time++;
+        requestAnimationFrame(drawGrid);
+    }
+
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    drawGrid();
+
+    // ================= ПАРАЛЛАКС БУКВЫ N =================
+    const bigN = document.getElementById('big-N');
+    let scrollY = 0;
+    let currentY = 0;
+
+    window.addEventListener('scroll', () => {
+        scrollY = window.scrollY;
+    });
+
+    function animateN() {
+        currentY += (scrollY - currentY) * 0.08;
+        bigN.style.transform = `translate(-50%, calc(-50% + ${currentY * 0.3}px)) scale(${1 + currentY * 0.0004})`;
+        requestAnimationFrame(animateN);
+    }
+    animateN();
+
+    // ================= REVEAL =================
+    const reveals = document.querySelectorAll('.reveal');
+    const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                e.target.classList.add('visible');
+                io.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+    reveals.forEach(el => io.observe(el));
+
+    // ================= СЧЁТЧИК =================
+    const counters = document.querySelectorAll('[data-count]');
+    const counterObserver = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                const el = e.target;
+                const target = +el.dataset.count;
+                const duration = 1500;
+                const start = performance.now();
+                const tick = (now) => {
+                    const p = Math.min((now - start) / duration, 1);
+                    const eased = 1 - Math.pow(1 - p, 3);
+                    el.textContent = Math.floor(eased * target);
+                    if (p < 1) requestAnimationFrame(tick);
+                    else el.textContent = target;
+                };
+                requestAnimationFrame(tick);
+                counterObserver.unobserve(el);
+            }
+        });
+    }, { threshold: 0.5 });
+    counters.forEach(c => counterObserver.observe(c));
+
+    // ================= TYPEWRITER (опционально) =================
+    // В hero уже есть текст, можно раскомментировать, если нужно
+</script>
+
+</body>
+</html>
